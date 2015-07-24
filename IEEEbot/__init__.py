@@ -22,12 +22,14 @@ import re
 
 import os
 
+from storage import Storage
+
 TOKEN = os.environ['IEEEBOT_TOKEN']
 
 USERNAME_PLUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)\+\+'
 USERNAME_MINUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)\-\-'
 
-puntos = []
+storage = Storage('database.sqlite')
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -44,10 +46,14 @@ ch.setFormatter(formatter)
 def get_karma_ranking_message():
     logger.debug("entra get_karma_ranking_message")
     text="📊 Ranking actual:\n\n"
-    for usuario in puntos:
-        text += "‣ {0}: {1} puntos\n".format(usuario['username'], usuario['karma'])
-    logger.debug("sale get_karma_ranking_message")
-    return text
+    
+    karma_ranking = storage.ranking
+    
+    if karma_ranking:
+        for entry in karma_ranking:
+            text += "‣ {0}: {1} puntos\n".format(entry[0], entry[1])
+        logger.debug("sale get_karma_ranking_message")
+        return text
 
 
 @bot.message_handler(commands=['ranking'])
@@ -67,15 +73,13 @@ def mas1_handler(message):
     """
     m = re.search(USERNAME_PLUS_REGEXP_SEARCH, message.text)
     if m:
-        logger.debug(m.group(1))
-        for usuario in puntos:
-            if usuario['username'] == m.group(1):
-                usuario['karma'] += 1
-                bot.reply_to(message, "{0}: {1} puntos 👍\n".format(usuario['username'], usuario['karma']))
-                break
+        karma = storage.get_user_karma(m.group(1))
+        if karma:
+            storage.update_user_karma(m.group(1), karma + 1)
         else:
-            puntos.append({'username':m.group(1), 'karma':1})
-            bot.reply_to(message, "{0}: {1} punto 👍\n".format(m.group(1), str(1)))
+            karma = 0;
+            storage.insert_user_karma(m.group(1), karma + 1)
+        bot.reply_to(message, "{0}: {1} puntos 👍\n".format(m.group(1), karma + 1))
 
 @bot.message_handler(regexp=USERNAME_MINUS_REGEXP_SEARCH)
 def menos1_handler(message):
@@ -84,14 +88,13 @@ def menos1_handler(message):
     """
     m = re.match(USERNAME_MINUS_REGEXP_SEARCH, message.text)
     if m:
-        for usuario in puntos:
-            if usuario['username'] == m.group(1):
-                usuario['karma'] -= 1
-                bot.reply_to(message, "{0}: {1} puntos 👎\n".format(usuario['username'], usuario['karma']))
-                break
+        karma = storage.get_user_karma(m.group(1))
+        if karma:
+            storage.update_user_karma(m.group(1), karma - 1)
         else:
-            puntos.append({'username':m.group(1), 'karma':-1})
-            bot.reply_to(message, "{0}: {1} puntos 👎\n".format(m.group(1), str(-1)))
+            karma = 0;
+            storage.insert_user_karma(m.group(1), karma - 1)
+        bot.reply_to(message, "{0}: {1} puntos 👎\n".format(m.group(1), karma - 1))
 
 #bot.set_update_listener(listener) #register listener
 bot.polling()
