@@ -82,7 +82,7 @@ class Storage(object):
 
     @property
     def ranking(self):
-        return list(self.sql.select('select * from karma order by karma asc'))
+        return list(self.sql.select('select * from karma order by karma desc'))
     
     def close(self):
         sql.close()
