@@ -73,6 +73,10 @@ def mas1_handler(message):
     """
     m = re.search(USERNAME_PLUS_REGEXP_SEARCH, message.text)
     if m:
+        if message.from_user.username == m.group(1):
+            bot.reply_to(message, "Ni lo intentes... 😒")
+            return # One cannot give karma to itself
+        
         karma = storage.get_user_karma(m.group(1))
         if karma:
             storage.update_user_karma(m.group(1), karma + 1)
@@ -88,6 +92,10 @@ def menos1_handler(message):
     """
     m = re.match(USERNAME_MINUS_REGEXP_SEARCH, message.text)
     if m:
+        if message.from_user.username == m.group(1):
+            bot.reply_to(message, "Tontos hay en todos lados 😆")
+            return # One cannot give karma to itself
+            
         karma = storage.get_user_karma(m.group(1))
         if karma:
             storage.update_user_karma(m.group(1), karma - 1)
