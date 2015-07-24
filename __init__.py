@@ -27,8 +27,7 @@ TOKEN = os.environ['IEEEBOT_TOKEN']
 USERNAME_PLUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)\+\+'
 USERNAME_MINUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)\-\-'
 
-puntos = [{'username':"rafael1193", 'karma':0},
-          {'username':"pleonex"   , 'karma':0}]
+puntos = []
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -74,9 +73,9 @@ def mas1_handler(message):
                 usuario['karma'] += 1
                 bot.reply_to(message, "karma +1")
                 break
-   
-    
-    
+        else:
+            puntos.append({'username':m.group(1), 'karma':1})
+
 @bot.message_handler(regexp=USERNAME_MINUS_REGEXP_SEARCH)
 def menos1_handler(message):
     """
@@ -89,9 +88,8 @@ def menos1_handler(message):
                 usuario['karma'] -= 1
                 bot.reply_to(message, "karma -1")
                 break
-   
-    
-
+        else:
+            puntos.append({'username':m.group(1), 'karma':-1})
 
 #bot.set_update_listener(listener) #register listener
 bot.polling()
