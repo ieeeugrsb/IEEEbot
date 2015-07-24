@@ -43,9 +43,9 @@ ch.setFormatter(formatter)
 
 def get_karma_ranking_message():
     logger.debug("entra get_karma_ranking_message")
-    text="Ranking actual:\n\n"
+    text="📊 Ranking actual:\n\n"
     for usuario in puntos:
-        text += "{0}: {1} puntos\n".format(usuario['username'], usuario['karma'])
+        text += "‣ {0}: {1} puntos\n".format(usuario['username'], usuario['karma'])
     logger.debug("sale get_karma_ranking_message")
     return text
 
@@ -71,11 +71,11 @@ def mas1_handler(message):
         for usuario in puntos:
             if usuario['username'] == m.group(1):
                 usuario['karma'] += 1
-                bot.reply_to(message, "{0}: {1} puntos\n".format(usuario['username'], usuario['karma']))
+                bot.reply_to(message, "{0}: {1} puntos 👍\n".format(usuario['username'], usuario['karma']))
                 break
         else:
             puntos.append({'username':m.group(1), 'karma':1})
-            bot.reply_to(message, "{0}: {1} punto\n".format(m.group(1), str(1)))
+            bot.reply_to(message, "{0}: {1} punto 👍\n".format(m.group(1), str(1)))
 
 @bot.message_handler(regexp=USERNAME_MINUS_REGEXP_SEARCH)
 def menos1_handler(message):
@@ -87,11 +87,11 @@ def menos1_handler(message):
         for usuario in puntos:
             if usuario['username'] == m.group(1):
                 usuario['karma'] -= 1
-                bot.reply_to(message, "{0}: {1} puntos\n".format(usuario['username'], usuario['karma']))
+                bot.reply_to(message, "{0}: {1} puntos 👎\n".format(usuario['username'], usuario['karma']))
                 break
         else:
             puntos.append({'username':m.group(1), 'karma':-1})
-            bot.reply_to(message, "{0}: {1} puntos\n".format(m.group(1), str(-1)))
+            bot.reply_to(message, "{0}: {1} puntos 👎\n".format(m.group(1), str(-1)))
 
 #bot.set_update_listener(listener) #register listener
 bot.polling()
