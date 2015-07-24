@@ -71,10 +71,11 @@ def mas1_handler(message):
         for usuario in puntos:
             if usuario['username'] == m.group(1):
                 usuario['karma'] += 1
-                bot.reply_to(message, "karma +1")
+                bot.reply_to(message, "{0}: {1} puntos\n".format(usuario['username'], usuario['karma']))
                 break
         else:
             puntos.append({'username':m.group(1), 'karma':1})
+            bot.reply_to(message, "{0}: {1} punto\n".format(m.group(1), str(1)))
 
 @bot.message_handler(regexp=USERNAME_MINUS_REGEXP_SEARCH)
 def menos1_handler(message):
@@ -86,10 +87,11 @@ def menos1_handler(message):
         for usuario in puntos:
             if usuario['username'] == m.group(1):
                 usuario['karma'] -= 1
-                bot.reply_to(message, "karma -1")
+                bot.reply_to(message, "{0}: {1} puntos\n".format(usuario['username'], usuario['karma']))
                 break
         else:
             puntos.append({'username':m.group(1), 'karma':-1})
+            bot.reply_to(message, "{0}: {1} puntos\n".format(m.group(1), str(-1)))
 
 #bot.set_update_listener(listener) #register listener
 bot.polling()
