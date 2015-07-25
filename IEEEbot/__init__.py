@@ -118,12 +118,7 @@ def menos1_handler(message):
         bot.reply_to(message,
                      "{0}: {1} puntos 👎\n".format(m.group(1), karma - 1))
 
-# bot.set_update_listener(listener) #register listener
-bot.polling()
 # Use none_stop flag let polling will not stop when get new message occur error
-bot.polling(none_stop=True)
 # Interval setup. Sleep 3 secs between request new message.
-bot.polling(interval=3)
-
-while True:  # Don't let the main Thread end.
-    pass
+bot.polling(none_stop=True, interval=3)
+bot.polling_thread.join()
