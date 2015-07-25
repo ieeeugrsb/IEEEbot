@@ -46,17 +46,17 @@ bot = telebot.TeleBot(TOKEN)
 
 # Logging
 logger = telebot.logger
-formatter = logging.Formatter('[%(asctime)s] %(thread)d {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s', '%m-%d %H:%M:%S')
+formatter = logging.Formatter('[%(asctime)s] %(thread)d \
+  {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s', '%m-%d %H:%M:%S')
 ch = logging.StreamHandler(sys.stdout)
 logger.addHandler(ch)
 logger.setLevel(logging.DEBUG)  # or use logging.INFO
 ch.setFormatter(formatter)
-###
 
 
 def get_karma_ranking_message():
     logger.debug("entra get_karma_ranking_message")
-    text="📊 Ranking actual:\n\n"
+    text = "📊 Ranking actual:\n\n"
 
     karma_ranking = storage.ranking
 
@@ -86,15 +86,17 @@ def mas1_handler(message):
     if m:
         if message.from_user.username == m.group(1):
             bot.reply_to(message, "Ni lo intentes... 😒")
-            return # One cannot give karma to itself
+            return  # One cannot give karma to itself
 
         karma = storage.get_user_karma(m.group(1))
         if karma:
             storage.update_user_karma(m.group(1), karma + 1)
         else:
-            karma = 0;
+            karma = 0
             storage.insert_user_karma(m.group(1), karma + 1)
-        bot.reply_to(message, "{0}: {1} puntos 👍\n".format(m.group(1), karma + 1))
+        bot.reply_to(message,
+                     "{0}: {1} puntos 👍\n".format(m.group(1), karma + 1))
+
 
 @bot.message_handler(regexp=USERNAME_MINUS_REGEXP_SEARCH)
 def menos1_handler(message):
@@ -105,22 +107,23 @@ def menos1_handler(message):
     if m:
         if message.from_user.username == m.group(1):
             bot.reply_to(message, "Tontos hay en todos lados 😆")
-            return # One cannot give karma to itself
+            return  # One cannot give karma to itself
 
         karma = storage.get_user_karma(m.group(1))
         if karma:
             storage.update_user_karma(m.group(1), karma - 1)
         else:
-            karma = 0;
+            karma = 0
             storage.insert_user_karma(m.group(1), karma - 1)
-        bot.reply_to(message, "{0}: {1} puntos 👎\n".format(m.group(1), karma - 1))
+        bot.reply_to(message,
+                     "{0}: {1} puntos 👎\n".format(m.group(1), karma - 1))
 
-#bot.set_update_listener(listener) #register listener
+# bot.set_update_listener(listener) #register listener
 bot.polling()
-#Use none_stop flag let polling will not stop when get new message occur error.
+# Use none_stop flag let polling will not stop when get new message occur error
 bot.polling(none_stop=True)
 # Interval setup. Sleep 3 secs between request new message.
 bot.polling(interval=3)
 
-while True: # Don't let the main Thread end.
+while True:  # Don't let the main Thread end.
     pass
