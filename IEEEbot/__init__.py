@@ -25,8 +25,8 @@ import os
 from storage import Storage
 
 # Regular expressions.
-USERNAME_PLUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)\+\+'
-USERNAME_MINUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)\-\-'
+USERNAME_PLUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)(\+{2,})'
+USERNAME_MINUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)(\-{2,})'
 
 # Database file path
 DATABASE_FILE = 'database.sqlite'
@@ -77,6 +77,24 @@ def ranking_handler(message):
     logger.debug("sale ranking_handler")
 
 
+def update_karma(user_name, points):
+    # No more than 5 points
+    points = 5 if points > 5 else points
+    points = -5 if points < -5 else points
+
+    # Update user karma.
+    karma = storage.get_user_karma(user_name)
+    karma = karma + points if karma else points
+
+    # If user exists in DB, update karma, otherwise insert it.
+    if karma:
+        storage.update_user_karma(user_name, karma)
+    else:
+        storage.insert_user_karma(user_name, karma)
+
+    return karma
+
+
 @bot.message_handler(regexp=USERNAME_PLUS_REGEXP_SEARCH)
 def mas1_handler(message):
     """
@@ -84,18 +102,19 @@ def mas1_handler(message):
     """
     m = re.search(USERNAME_PLUS_REGEXP_SEARCH, message.text)
     if m:
-        if message.from_user.username == m.group(1):
-            bot.reply_to(message, "Ni lo intentes... 😒")
-            return  # One cannot give karma to itself
+        # Get user name and karma points.
+        user_name = m.group(1)
+        points = len(m.group(2)) - 1
 
-        karma = storage.get_user_karma(m.group(1))
-        if karma:
-            storage.update_user_karma(m.group(1), karma + 1)
-        else:
-            karma = 0
-            storage.insert_user_karma(m.group(1), karma + 1)
+        # One cannot give karma to itself
+        if message.from_user.username == user_name:
+            bot.reply_to(message, "Ni lo intentes... 😒")
+            return
+
+        karma = update_karma(user_name, points)
         bot.reply_to(message,
-                     "{0}: {1} puntos 👍\n".format(m.group(1), karma + 1))
+                     "El karma de {0} ha aumentado a {1} 👍\n"
+                     .format(user_name, karma))
 
 
 @bot.message_handler(regexp=USERNAME_MINUS_REGEXP_SEARCH)
@@ -105,18 +124,19 @@ def menos1_handler(message):
     """
     m = re.match(USERNAME_MINUS_REGEXP_SEARCH, message.text)
     if m:
-        if message.from_user.username == m.group(1):
-            bot.reply_to(message, "Tontos hay en todos lados 😆")
-            return  # One cannot give karma to itself
+        # Get user name and karma points.
+        user_name = m.group(1)
+        points = (len(m.group(2)) - 1) * -1
 
-        karma = storage.get_user_karma(m.group(1))
-        if karma:
-            storage.update_user_karma(m.group(1), karma - 1)
-        else:
-            karma = 0
-            storage.insert_user_karma(m.group(1), karma - 1)
+        # One cannot give karma to itself
+        if message.from_user.username == user_name:
+            bot.reply_to(message, "Tontos hay en todos lados 😆")
+            return
+
+        karma = update_karma(user_name, points)
         bot.reply_to(message,
-                     "{0}: {1} puntos 👎\n".format(m.group(1), karma - 1))
+                     "El karma de {0} ha bajado a {1} 👎\n"
+                     .format(user_name, karma))
 
 # Use none_stop flag let polling will not stop when get new message occur error
 # Interval setup. Sleep 3 secs between request new message.
