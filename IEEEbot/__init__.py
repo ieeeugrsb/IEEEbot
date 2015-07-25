@@ -27,7 +27,7 @@ from storage import Storage
 # Regular expressions.
 USERNAME_PLUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)(\+{2,})'
 USERNAME_MINUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)(\-{2,})'
-MAX_POINTS = 5
+MAX_POINTS = 20
 
 # Database file path
 DATABASE_FILE = 'database.sqlite'
