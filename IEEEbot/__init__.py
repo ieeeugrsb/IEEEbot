@@ -24,16 +24,27 @@ import os
 
 from storage import Storage
 
-TOKEN = os.environ['IEEEBOT_TOKEN']
-
+# Regular expressions.
 USERNAME_PLUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)\+\+'
 USERNAME_MINUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)\-\-'
 
-storage = Storage('database.sqlite')
+# Database file path
+DATABASE_FILE = 'database.sqlite'
 
+# Load token from environment variable 'IEEEBOT_TOKEN'.
+TOKEN = os.environ['IEEEBOT_TOKEN']
+
+# Create a database object to store points
+storage = Storage(DATABASE_FILE)
+
+# Check if database existe, if not create it
+if not os.path.isfile(DATABASE_FILE):
+    storage.initialize()
+
+# Create a bot
 bot = telebot.TeleBot(TOKEN)
 
-### Logging
+# Logging
 logger = telebot.logger
 formatter = logging.Formatter('[%(asctime)s] %(thread)d {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s', '%m-%d %H:%M:%S')
 ch = logging.StreamHandler(sys.stdout)
@@ -46,9 +57,9 @@ ch.setFormatter(formatter)
 def get_karma_ranking_message():
     logger.debug("entra get_karma_ranking_message")
     text="📊 Ranking actual:\n\n"
-    
+
     karma_ranking = storage.ranking
-    
+
     if karma_ranking:
         for entry in karma_ranking:
             text += "‣ {0}: {1} puntos\n".format(entry[0], entry[1])
@@ -64,7 +75,7 @@ def ranking_handler(message):
     logger.debug("entra ranking_handler")
     bot.reply_to(message, get_karma_ranking_message())
     logger.debug("sale ranking_handler")
-    
+
 
 @bot.message_handler(regexp=USERNAME_PLUS_REGEXP_SEARCH)
 def mas1_handler(message):
@@ -76,7 +87,7 @@ def mas1_handler(message):
         if message.from_user.username == m.group(1):
             bot.reply_to(message, "Ni lo intentes... 😒")
             return # One cannot give karma to itself
-        
+
         karma = storage.get_user_karma(m.group(1))
         if karma:
             storage.update_user_karma(m.group(1), karma + 1)
@@ -95,7 +106,7 @@ def menos1_handler(message):
         if message.from_user.username == m.group(1):
             bot.reply_to(message, "Tontos hay en todos lados 😆")
             return # One cannot give karma to itself
-            
+
         karma = storage.get_user_karma(m.group(1))
         if karma:
             storage.update_user_karma(m.group(1), karma - 1)
