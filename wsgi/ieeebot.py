@@ -30,7 +30,7 @@ USERNAME_MINUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)(\-{2,})'
 MAX_POINTS = 20
 
 # Database file path
-DATABASE_FILE = 'database.sqlite'
+DATABASE_FILE = os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'database.sqlite')
 
 # Load token from environment variable 'IEEEBOT_TOKEN'.
 TOKEN = os.environ['IEEEBOT_TOKEN']
