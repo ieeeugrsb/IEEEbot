@@ -140,7 +140,8 @@ def menos1_handler(message):
                      "El karma de {0} ha bajado a {1} 👎\n"
                      .format(user_name, karma))
 
-# Use none_stop flag let polling will not stop when get new message occur error
-# Interval setup. Sleep 3 secs between request new message.
-bot.polling(none_stop=True, interval=3)
-bot.polling_thread.join()
+if __name__ == '__main__':
+    # Use none_stop flag let polling will not stop when get new message occur error
+    # Interval setup. Sleep 3 secs between request new message.
+    bot.polling(none_stop=True, interval=3)
+    bot.polling_thread.join()
