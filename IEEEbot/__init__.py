@@ -84,18 +84,11 @@ def update_karma(user_name, points):
         points = MAX_POINTS if points > MAX_POINTS else points
         points = -MAX_POINTS if points < -MAX_POINTS else points
 
-    # Update user karma.
-    karma = storage.get_user_karma(user_name)
-    exists = karma is not None
-    karma = karma + points if exists else points
+    # SQL query will add points and insert a new user if it does not exist.
+    storage.update_user_karma(user_name, points)
 
-    # If user exists in DB, update karma, otherwise insert it.
-    if exists:
-        storage.update_user_karma(user_name, karma)
-    else:
-        storage.insert_user_karma(user_name, karma)
-
-    return karma
+    # Get karma points
+    return storage.get_user_karma(user_name)
 
 
 @bot.message_handler(regexp=USERNAME_PLUS_REGEXP_SEARCH)
@@ -142,7 +135,7 @@ def menos1_handler(message):
                      .format(user_name, karma))
 
 if __name__ == '__main__':
-    # Use none_stop flag let polling will not stop when get new message occur error
+    # Use none_stop flag to not stop when get new message occur error.
     # Interval setup. Sleep 3 secs between request new message.
     bot.polling(none_stop=True, interval=3)
     bot.polling_thread.join()

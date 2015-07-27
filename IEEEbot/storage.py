@@ -79,14 +79,11 @@ class Storage(object):
         except StopIteration:
             return None
 
-    def insert_user_karma(self, username, karma):
-        t = (username, karma)
-        self.sql.execute('insert into karma (username, karma) values (?,?)', t)
-
-    def update_user_karma(self, username, karma):
-        t = (username, karma)
-        self.sql.execute('''insert or replace into karma (username, karma) values (
-                     (select username from karma where username=?),?);''', t)
+    def update_user_karma(self, username, points):
+        self.sql.execute(
+            'INSERT OR REPLACE INTO karma (username, karma) VALUES(?,' +
+            'COALESCE((SELECT karma from karma where username=?), 0) + ?);',
+            (username, username, points))
 
     @property
     def ranking(self):
