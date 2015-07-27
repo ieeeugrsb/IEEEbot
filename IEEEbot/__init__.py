@@ -85,10 +85,8 @@ def update_karma(user_name, points):
         points = -MAX_POINTS if points < -MAX_POINTS else points
 
     # SQL query will add points and insert a new user if it does not exist.
-    storage.update_user_karma(user_name, points)
-
-    # Get karma points
-    return storage.get_user_karma(user_name)
+    # It will returns the final karma points too.
+    return storage.update_user_karma(user_name, points)
 
 
 @bot.message_handler(regexp=USERNAME_PLUS_REGEXP_SEARCH)
