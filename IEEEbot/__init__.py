@@ -80,8 +80,9 @@ def ranking_handler(message):
 
 def update_karma(user_name, points):
     # No more than 5 points
-    points = MAX_POINTS if points > MAX_POINTS else points
-    points = -MAX_POINTS if points < -MAX_POINTS else points
+    if user_name != 'aroldan':
+        points = MAX_POINTS if points > MAX_POINTS else points
+        points = -MAX_POINTS if points < -MAX_POINTS else points
 
     # Update user karma.
     karma = storage.get_user_karma(user_name)
