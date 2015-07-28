@@ -14,11 +14,13 @@ ieeebot.logger.debug(ieeebot.DATABASE_FILE)
 
 @app.route('/ieeetestbot', methods=['POST'])
 def hello():
-    #if not request.json:
-    #    abort(400)
-    #else:
-    ieeebot.logger.info(str(request.get_json(force=True)))
-
+    update = request.get_json(force=True)
+    #ieeebot.logger.info(str(update))
+    
+    if update['update_id'] > ieeebot.last_update_id:
+        ieeebot.last_update_id = update['update_id']
+        ieeebot.process_update(update)
+            
     return "", 200
 
 if __name__ == "__main__":

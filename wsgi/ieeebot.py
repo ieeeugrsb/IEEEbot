@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import telebot
+import telebot.types
 import time
 import logging
 import sys
@@ -53,6 +54,14 @@ ch = logging.StreamHandler(sys.stdout)
 logger.addHandler(ch)
 logger.setLevel(logging.DEBUG)  # or use logging.INFO
 ch.setFormatter(formatter)
+
+# Keep last update timestamp
+last_update_id = 0
+
+
+def process_update(update):
+    message = telebot.types.Message.de_json(update['message'])
+    bot.process_new_messages([message])
 
 
 def get_karma_ranking_message():
