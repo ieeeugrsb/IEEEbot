@@ -38,8 +38,14 @@ class Storage(object):
                     break
 
                 try:
-                    cursor.execute(req, arg)
-                    cnx.commit()
+                    # If it's a tuple execute all requests
+                    if type(req) is tuple:
+                        for r, a in zip(req, arg):
+                            cursor.execute(r, a)
+                            cnx.commit()
+                    else:
+                        cursor.execute(req, arg)
+                        cnx.commit()
                 except:
                     cnx.rollback()
                 if res:
@@ -79,14 +85,17 @@ class Storage(object):
         except StopIteration:
             return None
 
-    def insert_user_karma(self, username, karma):
-        t = (username, karma)
-        self.sql.execute('insert into karma (username, karma) values (?,?)', t)
+    def update_user_karma(self, username, points):
+        result = self.sql.select(
+            ('INSERT OR REPLACE INTO karma (username, karma) VALUES(?,' +
+             'COALESCE((SELECT karma FROM karma WHERE username = ?), 0) + ?);',
+             'SELECT karma FROM karma WHERE username = ?;'),
+            ((username, username, points), (username,)))
 
-    def update_user_karma(self, username, karma):
-        t = (username, karma)
-        self.sql.execute('''insert or replace into karma (username, karma) values (
-                     (select username from karma where username=?),?);''', t)
+        try:
+            return next(result)[0]  # return karma value
+        except StopIteration:
+            return None
 
     @property
     def ranking(self):
