@@ -16,7 +16,7 @@ ieeebot.logger.debug(ieeebot.DATABASE_FILE)
 def hello(token=None):
     if token == ieeebot.TOKEN:
         update = request.get_json(force=True)
-        ieeebot.logger.info(str(update))
+        ieeebot.logger.debug(str(update))
         
         if update['update_id'] > ieeebot.last_update_id:
             ieeebot.last_update_id = update['update_id']
