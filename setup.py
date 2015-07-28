@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 setup(name='IEEEbot',
-      version='0.2',
+      version='0.3',
       description='IEEE Telegram bot',
       author='IEEE Student Branch of Granada',
       author_email='ieeegranada@ieee.org',
