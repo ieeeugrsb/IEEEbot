@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import telebot
+import telebot.types
 import time
 import logging
 import sys
@@ -30,7 +31,7 @@ USERNAME_MINUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)(\-{2,})'
 MAX_POINTS = 20
 
 # Database file path
-DATABASE_FILE = 'database.sqlite'
+DATABASE_FILE = os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'database.sqlite')
 
 # Load token from environment variable 'IEEEBOT_TOKEN'.
 TOKEN = os.environ['IEEEBOT_TOKEN']
@@ -53,6 +54,14 @@ ch = logging.StreamHandler(sys.stdout)
 logger.addHandler(ch)
 logger.setLevel(logging.DEBUG)  # or use logging.INFO
 ch.setFormatter(formatter)
+
+# Keep last update timestamp
+last_update_id = 0
+
+
+def process_update(update):
+    message = telebot.types.Message.de_json(update['message'])
+    bot.process_new_messages([message])
 
 
 def get_karma_ranking_message():

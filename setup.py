@@ -11,7 +11,7 @@ setup(name='IEEEbot',
       packages=find_packages(),
       license='GPL3',
       keywords='tools',
-      install_requires=['pyTelegramBotAPI'],
+      install_requires=['pyTelegramBotAPI', 'Flask>=0.7.2'],
       classifiers=[
           'Development Status :: 4 - Beta',
           'Programming Language :: Python :: 3',
