@@ -109,6 +109,11 @@ def mas1_handler(message):
         user_name = m.group(1)
         points = len(m.group(2)) - 1
 
+        # Don't allow karma changes in private conversations
+        if not isinstance(message.chat, telebot.types.GroupChat):
+            bot.reply_to(message, "Nada de subir karma por lo bajini ¿eh? 😒")
+            return
+
         # One cannot give karma to itself
         if message.from_user.username == user_name:
             bot.reply_to(message, "Ni lo intentes... 😒")
@@ -130,6 +135,11 @@ def menos1_handler(message):
         # Get user name and karma points.
         user_name = m.group(1)
         points = (len(m.group(2)) - 1) * -1
+        
+        # Don't allow karma changes in private conversations
+        if not isinstance(message.chat, telebot.types.GroupChat):
+            bot.reply_to(message, "Las humillaciones sólo en público, por favor 😈")
+            return
 
         # One cannot give karma to itself
         if message.from_user.username == user_name:
