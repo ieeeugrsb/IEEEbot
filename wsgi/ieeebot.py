@@ -63,6 +63,41 @@ def process_update(update):
     message = telebot.types.Message.de_json(update['message'])
     bot.process_new_messages([message])
 
+def get_user_category(karma):
+    '''Get classification of user depending its karma.
+    
+    Args:
+        karma: user karma
+    
+    Returns:
+        category: str or None
+    '''
+    categories = [{'range':(None, -10000), 'title':"satán"},
+                  {'range':(-9999, -1000), 'title':"supervillano(a)"},
+                  {'range':(-999, -100), 'title':"troll"},
+                  {'range':(-99, -10), 'title':"marginado(a)"},
+                  {'range':(-9, -1), 'title':"chistesmalosnoplz"},
+                  {'range':(0, 9), 'title':"noob"},
+                  {'range':(10, 99), 'title':"wannabe"},
+                  {'range':(100, 999), 'title':"sabio(a)"},
+                  {'range':(1000, 9999), 'title':"elputoamo™"},
+                  {'range':(10000, None), 'title':"dios(a)"}]
+    
+    category = None
+    
+    for c in categories:
+        if c['range'][0] is None:
+            if karma <= c['range'][1]:
+                category = c['title']
+        elif c['range'][1] is None:
+            if karma >= c['range'][0]:
+                category = c['title']
+        else:
+            if karma in range(c['range'][0], c['range'][1] + 1):
+                category = c['title']
+
+    return category
+
 
 def get_karma_ranking_message():
     text = "📊 Ranking actual:\n\n"
@@ -71,7 +106,12 @@ def get_karma_ranking_message():
 
     if karma_ranking:
         for entry in karma_ranking:
-            text += "‣ {0}: {1} puntos\n".format(entry[0], entry[1])
+            text += "‣ {0}: {1} puntos".format(entry[0], entry[1])
+            category = get_user_category(entry[1])
+            if category is not None:
+                text += " [{0}]".format(category)
+            text += "\n"
+                
         return text
 
 
