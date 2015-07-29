@@ -65,7 +65,6 @@ def process_update(update):
 
 
 def get_karma_ranking_message():
-    logger.debug("entra get_karma_ranking_message")
     text = "📊 Ranking actual:\n\n"
 
     karma_ranking = storage.ranking
@@ -73,7 +72,6 @@ def get_karma_ranking_message():
     if karma_ranking:
         for entry in karma_ranking:
             text += "‣ {0}: {1} puntos\n".format(entry[0], entry[1])
-        logger.debug("sale get_karma_ranking_message")
         return text
 
 
@@ -82,9 +80,7 @@ def ranking_handler(message):
     """
     Send karma ranking
     """
-    logger.debug("entra ranking_handler")
     bot.reply_to(message, get_karma_ranking_message())
-    logger.debug("sale ranking_handler")
 
 
 def update_karma(user_name, points):
