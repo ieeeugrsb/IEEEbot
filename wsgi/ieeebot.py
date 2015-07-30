@@ -108,6 +108,10 @@ def get_karma_ranking_message():
 
     if karma_ranking:
         for entry in karma_ranking:
+            # Hide users with 0 karma
+            if entry[1] == 0:
+                continue
+
             text += "‣ {0}: {1} puntos".format(entry[0], entry[1])
             category = get_user_category(entry[1])
             if category is not None:
