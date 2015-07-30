@@ -72,7 +72,8 @@ def get_user_category(karma):
     Returns:
         category: str or None
     '''
-    categories = [{'range':(None, -10000), 'title':"satán"},
+    categories = [{'range':(None, -100000), 'title':"aroldan"},
+                  {'range':(-99999, -10000), 'title':"satán"},
                   {'range':(-9999, -1000), 'title':"supervillano(a)"},
                   {'range':(-999, -100), 'title':"troll"},
                   {'range':(-99, -10), 'title':"marginado(a)"},
@@ -81,7 +82,8 @@ def get_user_category(karma):
                   {'range':(10, 99), 'title':"wannabe"},
                   {'range':(100, 999), 'title':"sabio(a)"},
                   {'range':(1000, 9999), 'title':"elputoamo™"},
-                  {'range':(10000, None), 'title':"dios(a)"}]
+                  {'range':(10000, 100000), 'title':"dios(a)"},
+                  {'range':(100000, None), 'title':"Chuck Norris"}]
     
     category = None
     
