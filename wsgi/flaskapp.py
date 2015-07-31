@@ -3,10 +3,10 @@ import os
 
 import ieeebot
 
-from flask import Flask, request, abort
+from flask import Flask, request, abort, render_template, url_for
 from storage import Storage
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='static/templates', static_folder='static')
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
 ieeebot.logger.debug(ieeebot.TOKEN)
@@ -25,6 +25,11 @@ def hello(token=None):
         return "", 200
     else:
         return "", 400
+
+@app.route('/ranking', methods=['GET'])
+def ranking(group_id=0):
+    group = ieeebot.storage.ranking
+    return render_template("ranking.html", group_id=group_id, group=group)
 
 if __name__ == "__main__":
     app.run(debug = True) 
