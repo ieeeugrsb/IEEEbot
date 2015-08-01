@@ -193,6 +193,24 @@ def menos1_handler(message):
                      "El karma de {0} ha bajado a {1} 👎\n"
                      .format(user_name, karma))
 
+@bot.message_handler(commands=['about'])
+def acercade_handler(message):
+    """
+    Send about text
+    """
+    about_text = """IEEEbot
+Copyright (C) 2015 Rafael Bailón-Ruiz <rafaelbailon @ ieee . org>
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+You can get the Corresponding Source for this software from http://github.com/ieeeugrsb/IEEEbot
+"""
+    bot.reply_to(message, about_text)
+
 if __name__ == '__main__':
     # Use none_stop flag to not stop when get new message occur error.
     # Interval setup. Sleep 3 secs between request new message.
