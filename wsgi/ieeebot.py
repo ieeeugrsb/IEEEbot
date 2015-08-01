@@ -20,10 +20,18 @@ import time
 import logging
 import sys
 import re
-
+import random
 import os
 
 from storage import Storage
+
+
+# Share url
+share_url_base = ''
+share_url_secret = ''
+share_url_activated = False  # Ranking sharing is enabled 
+share_url_enabled = False # Bot can do ranking sharing
+
 
 # Regular expressions.
 USERNAME_PLUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)(\+{2,})'
@@ -62,6 +70,7 @@ last_update_id = 0
 def process_update(update):
     message = telebot.types.Message.de_json(update['message'])
     bot.process_new_messages([message])
+
 
 def get_user_category(karma):
     '''Get classification of user depending its karma.
@@ -117,7 +126,9 @@ def get_karma_ranking_message():
             if category is not None:
                 text += " [{0}]".format(category)
             text += "\n"
-                
+        
+        if share_url_enabled and share_url_activated and share_url_base:
+            text += "\n🌍 Comparte este ranking:\n {0}".format('/'.join([share_url_base, share_url_secret]))
         return text
 
 
@@ -127,6 +138,26 @@ def ranking_handler(message):
     Send karma ranking
     """
     bot.reply_to(message, get_karma_ranking_message())
+
+
+@bot.message_handler(commands=['compartir'])
+def compartir_handler(message):
+    """
+    Toggle activation of ranking sharing
+    """
+    global share_url_activated, share_url_secret
+    
+    if not share_url_enabled:
+        bot.reply_to(message, "🚫 La compartición de ranking no está disponible")
+        return
+    
+    share_url_activated = not share_url_activated
+    
+    if share_url_activated:
+        share_url_secret = '{0:x}'.format(random.getrandbits(128))
+        bot.reply_to(message, "✔️ Compartición activada\n\n🌍 {0}".format('/'.join([share_url_base, share_url_secret])))
+    else:
+        bot.reply_to(message, "✖️ Compartición desactivada")
 
 
 def update_karma(user_name, points):
