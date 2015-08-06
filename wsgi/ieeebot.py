@@ -1,5 +1,6 @@
 # IEEEbot
 # Copyright (C) 2015 Rafael Bailón-Ruiz <rafaelbailon@ieee.org>
+# Copyright (C) 2015 Benito Palacios Sánchez <benito356@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -31,7 +32,8 @@ USERNAME_MINUS_REGEXP_SEARCH = '@([a-zA-Z0-9_]+)(\-{2,})'
 MAX_POINTS = 20
 
 # Database file path
-DATABASE_FILE = os.path.join(os.environ['OPENSHIFT_DATA_DIR'],'database.sqlite')
+DATABASE_FILE = os.path.join(os.environ['OPENSHIFT_DATA_DIR'],
+                             'database.sqlite')
 
 # Load token from environment variable 'IEEEBOT_TOKEN'.
 TOKEN = os.environ['IEEEBOT_TOKEN']
@@ -39,7 +41,7 @@ TOKEN = os.environ['IEEEBOT_TOKEN']
 # Create a database object to store points
 storage = Storage(DATABASE_FILE)
 
-# Check if database existe, if not create it
+# Check if database exists, if not create it
 if not os.path.isfile(DATABASE_FILE):
     storage.initialize()
 
@@ -63,30 +65,31 @@ def process_update(update):
     message = telebot.types.Message.de_json(update['message'])
     bot.process_new_messages([message])
 
+
 def get_user_category(karma):
     '''Get classification of user depending its karma.
-    
+
     Args:
         karma: user karma
-    
+
     Returns:
         category: str or None
     '''
-    categories = [{'range':(None, -100000), 'title':"aroldan"},
-                  {'range':(-99999, -10000), 'title':"satán"},
-                  {'range':(-9999, -1000), 'title':"supervillano(a)"},
-                  {'range':(-999, -100), 'title':"troll"},
-                  {'range':(-99, -10), 'title':"marginado(a)"},
-                  {'range':(-9, -1), 'title':"chistesmalosnoplz"},
-                  {'range':(0, 9), 'title':"noob"},
-                  {'range':(10, 99), 'title':"wannabe"},
-                  {'range':(100, 999), 'title':"sabio(a)"},
-                  {'range':(1000, 9999), 'title':"elputoamo™"},
-                  {'range':(10000, 100000), 'title':"dios(a)"},
-                  {'range':(100000, None), 'title':"Chuck Norris"}]
-    
+    categories = [{'range': (None, -100000), 'title': "aroldan"},
+                  {'range': (-99999, -10000), 'title': "satán"},
+                  {'range': (-9999, -1000), 'title': "supervillano(a)"},
+                  {'range': (-999, -100), 'title': "troll"},
+                  {'range': (-99, -10), 'title': "marginado(a)"},
+                  {'range': (-9, -1), 'title': "chistesmalosnoplz"},
+                  {'range': (0, 9), 'title': "noob"},
+                  {'range': (10, 99), 'title': "wannabe"},
+                  {'range': (100, 999), 'title': "sabio(a)"},
+                  {'range': (1000, 9999), 'title': "elputoamo™"},
+                  {'range': (10000, 100000), 'title': "dios(a)"},
+                  {'range': (100000, None), 'title': "Chuck Norris"}]
+
     category = None
-    
+
     for c in categories:
         if c['range'][0] is None:
             if karma <= c['range'][1]:
@@ -117,7 +120,7 @@ def get_karma_ranking_message():
             if category is not None:
                 text += " [{0}]".format(category)
             text += "\n"
-                
+
         return text
 
 
@@ -177,10 +180,11 @@ def menos1_handler(message):
         # Get user name and karma points.
         user_name = m.group(1)
         points = (len(m.group(2)) - 1) * -1
-        
+
         # Don't allow karma changes in private conversations
         if not isinstance(message.chat, telebot.types.GroupChat):
-            bot.reply_to(message, "Las humillaciones sólo en público, por favor 😈")
+            bot.reply_to(message,
+                         "Las humillaciones solo en público, por favor 😈")
             return
 
         # One cannot give karma to itself
@@ -193,6 +197,7 @@ def menos1_handler(message):
                      "El karma de {0} ha bajado a {1} 👎\n"
                      .format(user_name, karma))
 
+
 @bot.message_handler(commands=['about'])
 def acercade_handler(message):
     """
@@ -200,14 +205,22 @@ def acercade_handler(message):
     """
     about_text = """IEEEbot
 Copyright (C) 2015 Rafael Bailón-Ruiz <rafaelbailon @ ieee . org>
+Copyright (C) 2015 Benito Palacios Sánchez <benito356 @ gmail . com>
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU Affero General Public License along
+with this program. If not, see <http://www.gnu.org/licenses/>.
 
-You can get the Corresponding Source for this software from http://github.com/ieeeugrsb/IEEEbot
+You can get the Corresponding Source for this software from
+http://github.com/ieeeugrsb/IEEEbot
 """
     bot.reply_to(message, about_text)
 

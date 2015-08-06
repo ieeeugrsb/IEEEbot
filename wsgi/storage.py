@@ -1,5 +1,6 @@
 # IEEEbot
 # Copyright (C) 2015 Rafael Bailón-Ruiz <rafaelbailon@ieee.org>
+# Copyright (C) 2015 Benito Palacios Sánchez <benito356@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
