@@ -75,35 +75,50 @@ class Storage(object):
         self.sql = Storage.MultiThreadSQLite(database)
 
     def initialize(self):
-        self.sql.execute('create table karma ' +
-                         '(username text unique, karma integer)')
+        self.sql.execute('CREATE TABLE karmas (' +
+                         'karma_id INTEGER  NOT NULL  PRIMARY KEY AUTOINCREMENT,' +
+                         'chat_id INTEGER  NOT NULL,' +
+                         'username INTEGER  NOT NULL,' +
+                         'karma INTEGER NOT NULL,' +
+                         'FOREIGN KEY(chat_id) REFERENCES chats(chat_id)' +
+                         ')')
+        self.sql.execute('CREATE TABLE chats (' +
+                         'chat_id INTEGER  PRIMARY KEY NOT NULL,' +
+                         'hash TEXT  NOT NULL' +
+                         ')')
 
-    def get_user_karma(self, username):
-        t = (username,)
-        result = self.sql.select('select karma from karma where username=?', t)
+    def get_user_karma(self, chat_id, username):
+        t = (chat_id, username)
+        result = self.sql.select('select karma from karmas where chat_id=? and username=?', t)
         try:
             return next(result)[0]  # return karma value
         except StopIteration:
             return None
 
-    def update_user_karma(self, username, points):
+    def update_user_karma(self, chat_id, username, points):
+        str_hash = "1234657980abcdf"
         result = self.sql.select(
-            ('INSERT OR REPLACE INTO karma (username, karma) VALUES(?,' +
-             'COALESCE((SELECT karma FROM karma WHERE username = ?), 0) + ?);',
-             'SELECT karma FROM karma WHERE username = ?;'),
-            ((username, username, points), (username,)))
+            ('INSERT OR REPLACE INTO chats (chat_id, hash) VALUES(' +
+             'COALESCE((SELECT chat_id FROM chats WHERE chat_id=?), ?), ?);',
+             'INSERT OR REPLACE INTO karmas (karma_id, chat_id, username, karma) VALUES(?,?' +
+             'COALESCE((SELECT karma FROM karmas WHERE chat_id=? AND username=?), 0) + ?);',
+             'SELECT karma FROM karmas WHERE chat_id=? AND username=?;'),
+            ((chat_id, chat_id, str_hash),(chat_id, username, chat_id, username, points), (chat_id, username,)))
 
         try:
             return next(result)[0]  # return karma value
         except StopIteration:
             return None
 
-    @property
-    def ranking(self):
-        return list(self.sql.select('select * from karma order by karma desc'))
+    def get_ranking(self, chat_id):
+        print(chat_id)
+        t=(chat_id,)
+        result=list(self.sql.select('SELECT username, karma FROM karmas WHERE chat_id=? ORDER BY karma desc', t))
+        print(result)
+        return result
 
     def close(self):
-        sql.close()
+        self.sql.close()
 
 if __name__ == '__main__':
     storage = Storage('database.sqlite')

@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import pdb
+
 import telebot
 import telebot.types
 import time
@@ -54,7 +56,7 @@ formatter = logging.Formatter('[%(asctime)s] %(thread)d \
   {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s', '%m-%d %H:%M:%S')
 ch = logging.StreamHandler(sys.stdout)
 logger.addHandler(ch)
-logger.setLevel(logging.DEBUG)  # or use logging.INFO
+logger.setLevel(logging.INFO)  # or use logging.INFO
 ch.setFormatter(formatter)
 
 # Keep last update timestamp
@@ -104,11 +106,11 @@ def get_user_category(karma):
     return category
 
 
-def get_karma_ranking_message():
+def get_karma_ranking_message(chat_id):
     text = "📊 Ranking actual:\n\n"
 
-    karma_ranking = storage.ranking
-
+    karma_ranking = storage.get_ranking(chat_id)
+    print(karma_ranking)
     if karma_ranking:
         for entry in karma_ranking:
             # Hide users with 0 karma
@@ -129,10 +131,10 @@ def ranking_handler(message):
     """
     Send karma ranking
     """
-    bot.reply_to(message, get_karma_ranking_message())
+    bot.reply_to(message, get_karma_ranking_message(message.chat.id))
 
 
-def update_karma(user_name, points):
+def update_karma(chat_id, user_name, points):
     # No more than 5 points
     if user_name != 'aroldan':
         points = MAX_POINTS if points > MAX_POINTS else points
@@ -140,7 +142,7 @@ def update_karma(user_name, points):
 
     # SQL query will add points and insert a new user if it does not exist.
     # It will returns the final karma points too.
-    return storage.update_user_karma(user_name, points)
+    return storage.update_user_karma(chat_id, user_name, points)
 
 
 @bot.message_handler(regexp=USERNAME_PLUS_REGEXP_SEARCH)
@@ -153,18 +155,19 @@ def mas1_handler(message):
         # Get user name and karma points.
         user_name = m.group(1)
         points = len(m.group(2)) - 1
+        pdb.set_trace() 
 
-        # Don't allow karma changes in private conversations
-        if not isinstance(message.chat, telebot.types.GroupChat):
-            bot.reply_to(message, "Nada de subir karma por lo bajini ¿eh? 😒")
-            return
+#        # Don't allow karma changes in private conversations
+#        if not issubclass(message.chat.__class__, telebot.types.Chat):
+#            bot.reply_to(message, "Nada de subir karma por lo bajini ¿eh? 😒")
+#            return
 
         # One cannot give karma to itself
         if message.from_user.username == user_name:
             bot.reply_to(message, "Ni lo intentes... 😒")
             return
 
-        karma = update_karma(user_name, points)
+        karma = update_karma(message.chat.id, user_name, points)
         bot.reply_to(message,
                      "El karma de {0} ha aumentado a {1} 👍\n"
                      .format(user_name, karma))
@@ -181,18 +184,18 @@ def menos1_handler(message):
         user_name = m.group(1)
         points = (len(m.group(2)) - 1) * -1
 
-        # Don't allow karma changes in private conversations
-        if not isinstance(message.chat, telebot.types.GroupChat):
-            bot.reply_to(message,
-                         "Las humillaciones solo en público, por favor 😈")
-            return
+#        # Don't allow karma changes in private conversations
+#        if not isinstance(message.chat, telebot.types.Chat):
+#            bot.reply_to(message,
+#                         "Las humillaciones solo en público, por favor 😈")
+#            return
 
         # One cannot give karma to itself
         if message.from_user.username == user_name:
             bot.reply_to(message, "Tontos hay en todos lados 😆")
             return
 
-        karma = update_karma(user_name, points)
+        karma = update_karma(message.chat.id, user_name, points)
         bot.reply_to(message,
                      "El karma de {0} ha bajado a {1} 👎\n"
                      .format(user_name, karma))
