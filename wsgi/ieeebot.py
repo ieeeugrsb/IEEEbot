@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import pdb
-
 import telebot
 import telebot.types
 import time
@@ -110,7 +108,7 @@ def get_karma_ranking_message(chat_id):
     text = "📊 Ranking actual:\n\n"
 
     karma_ranking = storage.get_ranking(chat_id)
-    print(karma_ranking)
+
     if karma_ranking:
         for entry in karma_ranking:
             # Hide users with 0 karma
@@ -155,12 +153,6 @@ def mas1_handler(message):
         # Get user name and karma points.
         user_name = m.group(1)
         points = len(m.group(2)) - 1
-        pdb.set_trace() 
-
-#        # Don't allow karma changes in private conversations
-#        if not issubclass(message.chat.__class__, telebot.types.Chat):
-#            bot.reply_to(message, "Nada de subir karma por lo bajini ¿eh? 😒")
-#            return
 
         # One cannot give karma to itself
         if message.from_user.username == user_name:
@@ -183,12 +175,6 @@ def menos1_handler(message):
         # Get user name and karma points.
         user_name = m.group(1)
         points = (len(m.group(2)) - 1) * -1
-
-#        # Don't allow karma changes in private conversations
-#        if not isinstance(message.chat, telebot.types.Chat):
-#            bot.reply_to(message,
-#                         "Las humillaciones solo en público, por favor 😈")
-#            return
 
         # One cannot give karma to itself
         if message.from_user.username == user_name:
@@ -231,4 +217,4 @@ if __name__ == '__main__':
     # Use none_stop flag to not stop when get new message occur error.
     # Interval setup. Sleep 3 secs between request new message.
     bot.polling(none_stop=True, interval=3)
-    bot.polling_thread.join()
+    bot.stop_polling()

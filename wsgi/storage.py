@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import sqlite3
 
 from threading import Thread
@@ -47,7 +48,8 @@ class Storage(object):
                     else:
                         cursor.execute(req, arg)
                         cnx.commit()
-                except:
+                except sqlite3.Error as e:
+                    logging.log(level=logging.ERROR, msg="An error occurred: \n{}".format(e.args[0]))
                     cnx.rollback()
                 if res:
                     for rec in cursor:
@@ -96,25 +98,24 @@ class Storage(object):
             return None
 
     def update_user_karma(self, chat_id, username, points):
-        str_hash = "1234657980abcdf"
+        t = ((chat_id, username, points, chat_id, username, chat_id, username), 
+             (chat_id, username, points), 
+             (chat_id, username))
+
         result = self.sql.select(
-            ('INSERT OR REPLACE INTO chats (chat_id, hash) VALUES(' +
-             'COALESCE((SELECT chat_id FROM chats WHERE chat_id=?), ?), ?);',
-             'INSERT OR REPLACE INTO karmas (karma_id, chat_id, username, karma) VALUES(?,?' +
-             'COALESCE((SELECT karma FROM karmas WHERE chat_id=? AND username=?), 0) + ?);',
+            ('UPDATE karmas SET karma=(SELECT karma FROM karmas WHERE chat_id=? AND username=?) + ? WHERE chat_id=(SELECT chat_id FROM karmas WHERE chat_id=? AND username=?) AND username=(SELECT username FROM karmas WHERE chat_id=? AND username=?);',
+             'INSERT INTO karmas(chat_id, username, karma) SELECT ?, ?, ? WHERE changes() = 0;',
              'SELECT karma FROM karmas WHERE chat_id=? AND username=?;'),
-            ((chat_id, chat_id, str_hash),(chat_id, username, chat_id, username, points), (chat_id, username,)))
+             t)
 
         try:
-            return next(result)[0]  # return karma value
-        except StopIteration:
+            return list(result)[0][0] # return karma value
+        except TypeError:
             return None
 
     def get_ranking(self, chat_id):
-        print(chat_id)
         t=(chat_id,)
-        result=list(self.sql.select('SELECT username, karma FROM karmas WHERE chat_id=? ORDER BY karma desc', t))
-        print(result)
+        result=list(self.sql.select('SELECT username, karma FROM karmas WHERE chat_id=? ORDER BY karma desc;', t))
         return result
 
     def close(self):
