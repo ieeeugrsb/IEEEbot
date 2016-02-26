@@ -75,18 +75,24 @@ def get_user_category(karma):
     Returns:
         category: str or None
     '''
-    categories = [{'range': (None, -100000), 'title': "aroldan"},
-                  {'range': (-99999, -10000), 'title': "satán"},
-                  {'range': (-9999, -1000), 'title': "supervillano(a)"},
-                  {'range': (-999, -100), 'title': "troll"},
-                  {'range': (-99, -10), 'title': "marginado(a)"},
-                  {'range': (-9, -1), 'title': "chistesmalosnoplz"},
+    categories = [{'range': (None, -100000), 'title': "amroldan"},
+                  {'range': (-99999, -10000), 'title': "java ☕"},
+                  {'range': (-9999, -1000), 'title': "satán 👿"},
+                  {'range': (-999, -100), 'title': "supervillano(a)"},
+                  {'range': (-99, -10), 'title': "troll"},
+                  {'range': (-9, -1), 'title': "marginado(a)"},
                   {'range': (0, 9), 'title': "noob"},
-                  {'range': (10, 99), 'title': "wannabe"},
-                  {'range': (100, 999), 'title': "sabio(a)"},
-                  {'range': (1000, 9999), 'title': "elputoamo™"},
+                  {'range': (10, 41), 'title': "wannabe"},
+                  {'range': (42, 42), 'title': "Deep Thought"},
+                  {'range': (43, 99), 'title': "wannabe"},
+                  {'range': (100, 100), 'title': "sabio(a)"},
+                  {'range': (101, 101), 'title': "lol 😂"},
+                  {'range': (102, 999), 'title': "sabio(a)"},
+                  {'range': (1000, 1336), 'title': "elputoamo™"},
+                  {'range': (1337, 1337), 'title': "|-|/-\(|<3|2"}, # leetspeak for hacker
+                  {'range': (1338, 9999), 'title': "elputoamo™"},
                   {'range': (10000, 100000), 'title': "dios(a)"},
-                  {'range': (100000, None), 'title': "Chuck Norris"}]
+                  {'range': (100000, None), 'title': "Chuck Norris 👊"}]
 
     category = None
 
@@ -134,7 +140,7 @@ def ranking_handler(message):
 
 def update_karma(chat_id, user_name, points):
     # No more than 5 points
-    if user_name != 'aroldan':
+    if user_name != 'amroldan':
         points = MAX_POINTS if points > MAX_POINTS else points
         points = -MAX_POINTS if points < -MAX_POINTS else points
 
